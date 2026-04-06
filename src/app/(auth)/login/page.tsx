@@ -12,7 +12,7 @@ import { APP_NAME } from '@/lib/constants'
 const initialState = { error: undefined }
 
 const ERROR_MESSAGES: Record<string, string> = {
-  invite_expired: '招待リンクの有��期限が切れています。オーナーに再送信��依頼してください。',
+  invite_expired: '招待リンクの有効期限が切れています。オーナーに再送信を依頼してください。',
   auth_error: '認証に失敗しました。再度お試しください。',
 }
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
             もっとシンプルに。
           </p>
           <p className="text-zinc-400 text-lg">
-            パーソナルジム��けのトレーニ��グ管理アプリ
+            パーソナルジム向けのトレーニング管理アプリ
           </p>
         </div>
         <p className="text-zinc-500 text-sm">© 2026 {APP_NAME}</p>
@@ -66,7 +66,7 @@ export default function LoginPage() {
               ログイン
             </h2>
             <p className="text-sm text-zinc-500">
-              アカ��ント情報を入力してくださ���
+              アカウント情報を入力してください
             </p>
           </div>
 
@@ -94,7 +94,7 @@ export default function LoginPage() {
                   href="/reset-password"
                   className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
                 >
-                  パス��ードをお���れの方
+                  パスワードをお忘れの方
                 </Link>
               </div>
               <Input

@@ -98,6 +98,14 @@ export async function inviteTrainer(
     }
   }
 
+  // profiles に存在しなくても auth.users に存在する場合は招待不可
+  // （セットアップ時に手動作成されたアカウント等）
+  const { data: authUsers } = await serviceClient.auth.admin.listUsers()
+  const existingAuthUser = authUsers?.users.find((u) => u.email === email)
+  if (existingAuthUser) {
+    return { error: 'このメールアドレスは既に登録されています' }
+  }
+
   // New invite
   const { error } = await serviceClient.auth.admin.inviteUserByEmail(email, {
     data: { display_name: displayName, role },
@@ -105,6 +113,7 @@ export async function inviteTrainer(
   })
 
   if (error) {
+    console.error('[inviteTrainer] Supabase error:', error)
     return { error: '招待メールの送信に失敗しました。しばらく時間をおいて再試行してください' }
   }
 
