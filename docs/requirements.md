@@ -56,6 +56,7 @@ profiles
 ├── display_name: text
 ├── role: enum ('owner' | 'trainer')
 ├── is_primary: boolean (default: false, 最初に登録したオーナーのみtrue。削除不可)
+├── is_active: boolean (default: true, 論理削除フラグ。falseで退職済み)
 ├── created_at: timestamptz
 └── updated_at: timestamptz
 
