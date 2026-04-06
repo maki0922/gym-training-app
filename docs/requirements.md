@@ -40,7 +40,7 @@
 - API経由のデータアクセスは認証済みユーザーのみ許可
 - トレーナーは自ジムのデータのみアクセス可能
 - オーナーのみがトレーナーの招待・削除を実行可能
-- 環境変数で機密情報を管理し、クライアントに露出させない
+- 環境変数で機密情報を管理し、クライアントに露出させない（必要な環境変数: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`）
 - Server Actionsまたは Route Handlers を活用し、Supabase service_role keyをサーバーサイドのみで使用
 
 ---
@@ -86,6 +86,7 @@ training_sessions (トレーニングセッション)
 ├── session_date: date
 ├── status: enum ('in_progress' | 'completed') (default: 'in_progress')
 ├── notes: text [任意、セッション全体メモ]
+├── is_deleted: boolean (default: false, 論理削除フラグ)
 ├── created_at: timestamptz
 └── updated_at: timestamptz
 
@@ -378,6 +379,9 @@ src/
 │   ├── (auth)/
 │   │   ├── login/
 │   │   └── reset-password/
+│   │       └── update/       ← パスワード更新画面（メールリンクからの遷移先）
+│   ├── auth/
+│   │   └── callback/         ← Supabase Auth コールバック（招待・パスワードリセット処理）
 │   ├── (dashboard)/
 │   │   ├── layout.tsx          ← 認証ガード + ナビゲーション
 │   │   ├── page.tsx            ← ダッシュボード

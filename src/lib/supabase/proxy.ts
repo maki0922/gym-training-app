@@ -37,6 +37,12 @@ export async function updateSession(request: NextRequest) {
 
   // 認証が必要なパスへのアクセス制御
   const { pathname } = request.nextUrl;
+
+  // 静的ファイル・内部パスは認証チェックをスキップ
+  if (pathname.startsWith("/_next/") || pathname.includes(".")) {
+    return supabaseResponse;
+  }
+
   const isAuthPage =
     pathname.startsWith("/login") ||
     pathname.startsWith("/reset-password") ||
