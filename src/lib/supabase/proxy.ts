@@ -37,7 +37,10 @@ export async function updateSession(request: NextRequest) {
 
   // 認証が必要なパスへのアクセス制御
   const { pathname } = request.nextUrl;
-  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/reset-password");
+  const isAuthPage =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/auth/");
 
   if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();
