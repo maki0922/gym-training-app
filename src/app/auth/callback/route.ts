@@ -11,15 +11,27 @@ export async function GET(request: Request) {
   const supabase = await createClient()
 
   if (code) {
-    await supabase.auth.exchangeCodeForSession(code)
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (error) {
+      if (type === 'invite') {
+        return NextResponse.redirect(`${origin}/login?error=invite_expired`)
+      }
+      return NextResponse.redirect(`${origin}/login?error=auth_error`)
+    }
   } else if (tokenHash && type) {
-    await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
       token_hash: tokenHash,
       type: type as 'recovery' | 'email' | 'invite',
     })
+    if (error) {
+      if (type === 'invite') {
+        return NextResponse.redirect(`${origin}/login?error=invite_expired`)
+      }
+      return NextResponse.redirect(`${origin}/login?error=auth_error`)
+    }
   }
 
-  if (type === 'recovery') {
+  if (type === 'recovery' || type === 'invite') {
     return NextResponse.redirect(`${origin}/reset-password/update`)
   }
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
+import { Suspense, useActionState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +10,25 @@ import { login } from '@/lib/actions/auth'
 import { APP_NAME } from '@/lib/constants'
 
 const initialState = { error: undefined }
+
+const ERROR_MESSAGES: Record<string, string> = {
+  invite_expired: '招待リンクの有��期限が切れています。オーナーに再送信��依頼してください。',
+  auth_error: '認証に失敗しました。再度お試しください。',
+}
+
+function UrlErrorAlert() {
+  const searchParams = useSearchParams()
+  const urlError = searchParams.get('error')
+  const message = urlError ? ERROR_MESSAGES[urlError] : null
+
+  if (!message) return null
+
+  return (
+    <div className="rounded-lg bg-amber-50 border border-amber-100 px-4 py-3">
+      <p className="text-sm text-amber-700">{message}</p>
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, initialState)
@@ -25,7 +45,7 @@ export default function LoginPage() {
             もっとシンプルに。
           </p>
           <p className="text-zinc-400 text-lg">
-            パーソナルジム向けのトレーニング管理アプリ
+            パーソナルジム��けのトレーニ��グ管理アプリ
           </p>
         </div>
         <p className="text-zinc-500 text-sm">© 2026 {APP_NAME}</p>
@@ -46,7 +66,7 @@ export default function LoginPage() {
               ログイン
             </h2>
             <p className="text-sm text-zinc-500">
-              アカウント情報を入力してください
+              アカ��ント情報を入力してくださ���
             </p>
           </div>
 
@@ -74,7 +94,7 @@ export default function LoginPage() {
                   href="/reset-password"
                   className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
                 >
-                  パスワードをお忘れの方
+                  パス��ードをお���れの方
                 </Link>
               </div>
               <Input
@@ -87,6 +107,10 @@ export default function LoginPage() {
                 className="h-11"
               />
             </div>
+
+            <Suspense>
+              <UrlErrorAlert />
+            </Suspense>
 
             {state.error && (
               <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">

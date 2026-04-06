@@ -86,6 +86,7 @@ export type Database = {
           display_name: string
           email: string
           id: string
+          is_active: boolean
           is_primary: boolean
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
@@ -95,6 +96,7 @@ export type Database = {
           display_name: string
           email: string
           id: string
+          is_active?: boolean
           is_primary?: boolean
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
@@ -104,6 +106,7 @@ export type Database = {
           display_name?: string
           email?: string
           id?: string
+          is_active?: boolean
           is_primary?: boolean
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
