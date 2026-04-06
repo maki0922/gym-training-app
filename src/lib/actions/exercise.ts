@@ -4,9 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-
-export const CATEGORIES = ['胸', '背中', '脚', '肩', '腕', '腹', '有酸素', 'その他'] as const
-export type Category = (typeof CATEGORIES)[number]
+import { CATEGORIES, type Category } from '@/lib/constants'
 
 const exerciseSchema = z.object({
   name: z
@@ -43,7 +41,7 @@ export type ExerciseActionState = {
 }
 
 export async function addExercise(
-  _prevState: ExerciseActionState,
+  _prevState: ExerciseActionState | undefined,
   formData: FormData
 ): Promise<ExerciseActionState> {
   await requireAuth()

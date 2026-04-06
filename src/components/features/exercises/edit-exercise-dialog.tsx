@@ -11,7 +11,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { editExercise, CATEGORIES } from '@/lib/actions/exercise'
+import { CATEGORIES } from '@/lib/constants'
+import { editExercise } from '@/lib/actions/exercise'
 import type { Exercise } from '@/app/(dashboard)/admin/exercises/page'
 
 type Props = {
