@@ -107,13 +107,15 @@ export default async function SessionDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-4">
-      <Link
-        href={`/customers/${session.customer_id}`}
-        className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
-      >
-        <ChevronLeft className="size-4" />
-        {customerName} に戻る
-      </Link>
+      <div className="sticky top-14 lg:top-0 z-10 bg-white/95 backdrop-blur-sm -mx-4 px-4 py-2 border-b border-zinc-100 lg:-mx-8 lg:px-8">
+        <Link
+          href={`/customers/${session.customer_id}`}
+          className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+        >
+          <ChevronLeft className="size-4" />
+          {customerName} に戻る
+        </Link>
+      </div>
 
       <SessionDetailView
         session={{
