@@ -2,12 +2,22 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Pencil } from 'lucide-react'
+import { Pencil, Plus, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog'
 import { reactivateCustomer } from '@/lib/actions/customer'
+import { checkDuplicateSession, createSession, type DuplicateSession } from '@/lib/actions/session'
 import { EditCustomerDialog } from './edit-customer-dialog'
 import { DeactivateCustomerDialog } from './deactivate-customer-dialog'
 import type { Customer } from '@/app/(dashboard)/customers/page'
@@ -47,9 +57,14 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
   const [deactivateTarget, setDeactivateTarget] = useState<Customer | null>(null)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isReactivating, setIsReactivating] = useState(false)
+  const [isCreatingSession, setIsCreatingSession] = useState(false)
+  const [duplicates, setDuplicates] = useState<DuplicateSession[] | null>(null)
 
   const visibleSessions = sessions.slice(0, visibleCount)
   const hasMore = sessions.length > visibleCount
+
+  // 入力途中セッションの検出
+  const inProgressSession = sessions.find((s) => s.status === 'in_progress')
 
   const handleReactivate = async () => {
     setIsReactivating(true)
@@ -58,6 +73,49 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
     if (result.error) {
       toast.error(result.error)
     }
+  }
+
+  // --- 新規セッション開始 ---
+  const handleStartSession = async () => {
+    setIsCreatingSession(true)
+    const checkResult = await checkDuplicateSession(customer.id)
+
+    if (checkResult.duplicates && checkResult.duplicates.length > 0) {
+      setDuplicates(checkResult.duplicates)
+      setIsCreatingSession(false)
+      return
+    }
+
+    // 重複なし → 即作成
+    const createResult = await createSession(customer.id)
+    setIsCreatingSession(false)
+
+    if (createResult.error) {
+      toast.error(createResult.error)
+    } else if (createResult.sessionId) {
+      router.push(`/sessions/${createResult.sessionId}/edit`)
+    }
+  }
+
+  const handleForceCreateSession = async () => {
+    setDuplicates(null)
+    setIsCreatingSession(true)
+    const createResult = await createSession(customer.id)
+    setIsCreatingSession(false)
+
+    if (createResult.error) {
+      toast.error(createResult.error)
+    } else if (createResult.sessionId) {
+      router.push(`/sessions/${createResult.sessionId}/edit`)
+    }
+  }
+
+  const handleOpenExistingSession = () => {
+    if (duplicates && duplicates.length > 0) {
+      // 最新の既存セッションを開く
+      router.push(`/sessions/${duplicates[0].id}/edit`)
+    }
+    setDuplicates(null)
   }
 
   return (
@@ -137,7 +195,36 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
               </div>
             )}
           </dl>
+
+          {/* 新規セッション開始ボタン */}
+          {customer.isActive && (
+            <div className="pt-3 border-t border-zinc-100 mt-4">
+              <Button
+                className="w-full h-12 bg-zinc-900 hover:bg-zinc-700 text-white"
+                onClick={handleStartSession}
+                disabled={isCreatingSession}
+              >
+                <Plus className="size-4 mr-1" />
+                {isCreatingSession ? 'セッション作成中...' : '新規セッション開始'}
+              </Button>
+            </div>
+          )}
         </Card>
+
+        {/* 入力途中セッション通知 */}
+        {inProgressSession && (
+          <button
+            onClick={() => router.push(`/sessions/${inProgressSession.id}/edit`)}
+            className="w-full rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-left hover:bg-amber-100 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <AlertCircle className="size-4 text-amber-600 shrink-0" />
+              <p className="text-sm text-amber-800">
+                入力途中のセッションがあります（{formatDate(inProgressSession.sessionDate)} / 担当: {inProgressSession.trainerIsActive ? inProgressSession.trainerName : `${inProgressSession.trainerName}（退職済み）`}）
+              </p>
+            </div>
+          </button>
+        )}
 
         {/* 過去セッション一覧 */}
         <div className="space-y-3">
@@ -229,6 +316,37 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
 
       <EditCustomerDialog customer={editTarget} onClose={() => setEditTarget(null)} />
       <DeactivateCustomerDialog customer={deactivateTarget} onClose={() => setDeactivateTarget(null)} />
+
+      {/* 重複セッション警告ダイアログ */}
+      <AlertDialog open={!!duplicates} onOpenChange={(open) => !open && setDuplicates(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>本日のセッションが既に存在します</AlertDialogTitle>
+            <AlertDialogDescription>
+              {duplicates?.map((d) => (
+                <span key={d.id} className="block">
+                  担当: {d.trainerName} / ステータス: {d.status === 'in_progress' ? '入力中' : '完了'}
+                </span>
+              ))}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <Button
+              variant="outline"
+              onClick={handleOpenExistingSession}
+            >
+              既存のセッションを開く
+            </Button>
+            <Button
+              className="bg-zinc-900 hover:bg-zinc-700 text-white"
+              onClick={handleForceCreateSession}
+            >
+              新規作成する
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
