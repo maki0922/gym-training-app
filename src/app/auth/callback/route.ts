@@ -9,6 +9,8 @@ export async function GET(request: Request) {
   const type = searchParams.get('type')
   const next = searchParams.get('next') ?? '/'
 
+  console.log('auth callback params:', { code: code ? 'present' : 'null', tokenHash: tokenHash ? 'present' : 'null', type, allParams: searchParams.toString() })
+
   const redirectUrl = (type === 'recovery' || type === 'invite')
     ? `${origin}/reset-password/update`
     : `${origin}${next}`
