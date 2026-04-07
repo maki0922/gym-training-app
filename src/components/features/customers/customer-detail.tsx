@@ -251,7 +251,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                         <tr
                           key={session.id}
                           className="border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50 cursor-pointer"
-                          onClick={() => router.push(`/sessions/${session.id}`)}
+                          onClick={() => router.push(`/sessions/${session.id}/edit`)}
                         >
                           <td className="px-4 py-3 text-zinc-900">{formatDate(session.sessionDate)}</td>
                           <td className="px-4 py-3 text-zinc-600">
@@ -278,7 +278,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                   <Card
                     key={session.id}
                     className="p-4 cursor-pointer hover:bg-zinc-50 transition-colors"
-                    onClick={() => router.push(`/sessions/${session.id}`)}
+                    onClick={() => router.push(`/sessions/${session.id}/edit`)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="space-y-0.5">
@@ -330,20 +330,21 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
               ))}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
             <Button
               variant="outline"
+              className="w-full"
               onClick={handleOpenExistingSession}
             >
               既存のセッションを開く
             </Button>
             <Button
-              className="bg-zinc-900 hover:bg-zinc-700 text-white"
+              className="w-full bg-zinc-900 hover:bg-zinc-700 text-white"
               onClick={handleForceCreateSession}
             >
               新規作成する
             </Button>
+            <AlertDialogCancel className="w-full mt-0">キャンセル</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

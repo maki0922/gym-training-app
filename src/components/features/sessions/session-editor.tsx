@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
@@ -79,6 +79,15 @@ export function SessionEditor({ session, exercises, previousRecords }: Props) {
   const router = useRouter()
   const [records, setRecords] = useState<RecordData[]>(session.records)
   const [sessionNotes, setSessionNotes] = useState(session.notes ?? '')
+
+  // propsの変更時にローカルステートを同期（種目追加・削除後のrevalidatePath反映）
+  useEffect(() => {
+    setRecords(session.records)
+  }, [session.records])
+
+  useEffect(() => {
+    setSessionNotes(session.notes ?? '')
+  }, [session.notes])
   const [showAddExercise, setShowAddExercise] = useState(false)
   const [showComplete, setShowComplete] = useState(false)
   const [isPendingComplete, setIsPendingComplete] = useState(false)
