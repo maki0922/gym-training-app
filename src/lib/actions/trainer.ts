@@ -123,7 +123,10 @@ export async function inviteTrainer(
 
   if (error) {
     console.error('[inviteTrainer] Supabase error:', error)
-    return { error: '招待メールの送信に失敗しました。しばらく時間をおいて再試行してください' }
+    if (error.status === 429) {
+      return { error: 'リクエストの制限に達しました。しばらく時間をおいて再試行してください（Code: 429）' }
+    }
+    return { error: `招待メールの送信に失敗しました。しばらく時間をおいて再試行してください（Code: ${error.status ?? 'unknown'}）` }
   }
 
   revalidatePath('/admin/trainers')
@@ -286,7 +289,10 @@ export async function resendInvite(targetId: string): Promise<TrainerActionState
   })
 
   if (error) {
-    return { error: '招待メールの再送信に失敗しました。しばらく時間をおいて再試行してください' }
+    if (error.status === 429) {
+      return { error: 'リクエストの制限に達しました。しばらく時間をおいて再試行してください（Code: 429）' }
+    }
+    return { error: `招待メールの再送信に失敗しました。しばらく時間をおいて再試行してください（Code: ${error.status ?? 'unknown'}）` }
   }
 
   return { success: true }
