@@ -251,7 +251,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                         <tr
                           key={session.id}
                           className="border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50 cursor-pointer"
-                          onClick={() => router.push(`/sessions/${session.id}/edit`)}
+                          onClick={() => router.push(`/sessions/${session.id}`)}
                         >
                           <td className="px-4 py-3 text-zinc-900">{formatDate(session.sessionDate)}</td>
                           <td className="px-4 py-3 text-zinc-600">
@@ -278,7 +278,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                   <Card
                     key={session.id}
                     className="p-4 cursor-pointer hover:bg-zinc-50 transition-colors"
-                    onClick={() => router.push(`/sessions/${session.id}/edit`)}
+                    onClick={() => router.push(`/sessions/${session.id}`)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="space-y-0.5">

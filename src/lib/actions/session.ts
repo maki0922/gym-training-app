@@ -27,6 +27,12 @@ function todayJST(): string {
   return jst.toISOString().split('T')[0]
 }
 
+async function requireOwner() {
+  const { user, profile, supabase } = await requireAuth()
+  if (profile.role !== 'owner') redirect('/')
+  return { user, profile, supabase }
+}
+
 // ---------- types ----------
 
 export type DuplicateSession = {
@@ -457,4 +463,25 @@ export async function copyPreviousSets(
 
   revalidatePath(`/sessions/${sessionId}/edit`)
   return { success: true }
+}
+
+// ---------- 9-4: セッション削除（論理削除、オーナーのみ） ----------
+
+export async function deleteSession(
+  sessionId: string,
+  customerId: string
+): Promise<SessionActionState> {
+  const { supabase } = await requireOwner()
+
+  const { error } = await supabase
+    .from('training_sessions')
+    .update({ is_deleted: true })
+    .eq('id', sessionId)
+
+  if (error) {
+    return { error: 'セッションの削除に失敗しました。再試行してください' }
+  }
+
+  revalidatePath(`/customers/${customerId}`)
+  return { success: true, sessionId }
 }
