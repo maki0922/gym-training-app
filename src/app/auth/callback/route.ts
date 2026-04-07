@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
+import type { Database } from '@/lib/types/database.types'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -8,7 +9,33 @@ export async function GET(request: Request) {
   const type = searchParams.get('type')
   const next = searchParams.get('next') ?? '/'
 
-  const supabase = await createClient()
+  const redirectUrl = (type === 'recovery' || type === 'invite')
+    ? `${origin}/reset-password/update`
+    : `${origin}${next}`
+
+  const response = NextResponse.redirect(redirectUrl)
+
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.headers.get('cookie')
+            ?.split('; ')
+            .map((c) => {
+              const [name, ...rest] = c.split('=')
+              return { name, value: rest.join('=') }
+            }) ?? []
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
@@ -33,12 +60,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // 招待・パスワードリセット時はセッションを確認
-  if (type === 'recovery' || type === 'invite') {
-    const { data: { session } } = await supabase.auth.getSession()
-    console.log('auth callback session check:', session ? 'session exists' : 'no session')
-    return NextResponse.redirect(`${origin}/reset-password/update`)
-  }
-
-  return NextResponse.redirect(`${origin}${next}`)
+  return response
 }
