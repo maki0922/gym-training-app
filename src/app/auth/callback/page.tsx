@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
 
-export default function AuthCallbackPage() {
+function CallbackHandler() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string>()
@@ -65,5 +65,17 @@ export default function AuthCallbackPage() {
     <div className="flex items-center justify-center min-h-screen">
       <Loader2 className="size-6 text-zinc-400 animate-spin" />
     </div>
+  )
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="size-6 text-zinc-400 animate-spin" />
+      </div>
+    }>
+      <CallbackHandler />
+    </Suspense>
   )
 }
