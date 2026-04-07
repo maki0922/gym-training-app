@@ -140,7 +140,7 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
           <h3 className="font-medium text-zinc-900">{exerciseName}</h3>
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon"
             className="text-zinc-400 hover:text-red-500"
             onClick={() => setShowDeleteRecord(true)}
           >
@@ -157,7 +157,7 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs text-zinc-600 hover:text-zinc-900 h-7"
+              className="text-xs text-zinc-600 hover:text-zinc-900 min-h-[44px]"
               onClick={handleCopyPrevious}
               disabled={isPendingCopy}
             >
@@ -168,7 +168,7 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
         )}
 
         {/* セットヘッダー */}
-        <div className="grid grid-cols-[2rem_1fr_1fr_2.5rem] gap-2 px-1 text-xs text-zinc-400 font-medium">
+        <div className="grid grid-cols-[2rem_1fr_1fr_2rem] gap-2 px-1 text-xs text-zinc-400 font-medium">
           <span></span>
           <span>重量 (kg)</span>
           <span>回数</span>
@@ -176,9 +176,9 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
         </div>
 
         {/* セット行 */}
-        {record.sets.map((set) => (
-          <div key={set.id} className="space-y-1">
-            <div className="grid grid-cols-[2rem_1fr_1fr_2.5rem] gap-2 items-center">
+        {record.sets.map((set, idx) => (
+          <div key={set.id} className={`space-y-1 rounded-lg px-1 py-1.5 ${idx % 2 === 1 ? 'bg-zinc-50' : ''}`}>
+            <div className="grid grid-cols-[2rem_1fr_1fr_2rem] gap-2 items-center">
               <span className="text-sm text-zinc-400 text-center font-medium">{set.setNumber}</span>
               <Input
                 type="number"
@@ -204,14 +204,13 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
                 onChange={(e) => handleSetLocalChange(set.id, 'reps', e.target.value)}
                 onBlur={() => handleSetBlur(set)}
               />
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="text-zinc-300 hover:text-red-500"
+              <button
+                type="button"
+                className="flex items-center justify-center size-11 -m-1.5 text-zinc-300 hover:text-red-500 transition-colors"
                 onClick={() => setDeleteSetTarget(set)}
               >
                 <Trash2 className="size-3.5" />
-              </Button>
+              </button>
             </div>
             {/* セットメモ */}
             <div className="pl-8 pr-10">
@@ -231,8 +230,7 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
         {/* セット追加ボタン */}
         <Button
           variant="outline"
-          size="sm"
-          className="w-full text-zinc-500 border-dashed"
+          className="w-full text-zinc-500 border-dashed h-11"
           onClick={handleAddSet}
           disabled={isPendingAdd}
         >

@@ -156,6 +156,7 @@ export function TrainerList({ members, currentUserId }: Props) {
                 <Button
                   variant="ghost"
                   size="sm"
+                  className="min-h-[44px]"
                   onClick={() => handleResend(member)}
                   disabled={resending === member.id}
                 >
@@ -166,6 +167,7 @@ export function TrainerList({ members, currentUserId }: Props) {
               <Button
                 variant="ghost"
                 size="sm"
+                className="min-h-[44px]"
                 onClick={() => setEditTarget(member)}
               >
                 <Pencil className="size-3.5" data-icon="inline-start" />
@@ -175,7 +177,7 @@ export function TrainerList({ members, currentUserId }: Props) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 min-h-[44px]"
                   onClick={() => setDeleteTarget(member)}
                 >
                   <Trash2 className="size-3.5" data-icon="inline-start" />

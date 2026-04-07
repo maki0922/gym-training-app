@@ -65,7 +65,7 @@ export function ExerciseList({ exercises, isOwner }: Props) {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                'shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                'shrink-0 rounded-full px-3 py-2.5 text-sm font-medium transition-colors',
                 selectedCategory === cat
                   ? 'bg-zinc-900 text-white'
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
@@ -182,7 +182,7 @@ export function ExerciseList({ exercises, isOwner }: Props) {
                       <>
                         <Button
                           variant="ghost"
-                          size="icon-sm"
+                          size="icon"
                           onClick={() => setEditTarget(exercise)}
                         >
                           <Pencil className="size-3.5" />
@@ -190,7 +190,7 @@ export function ExerciseList({ exercises, isOwner }: Props) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-zinc-500 hover:text-zinc-700"
+                          className="text-zinc-500 hover:text-zinc-700 min-h-[44px]"
                           onClick={() => setDeactivateTarget(exercise)}
                         >
                           無効化
@@ -200,7 +200,7 @@ export function ExerciseList({ exercises, isOwner }: Props) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-zinc-500 hover:text-zinc-700"
+                        className="text-zinc-500 hover:text-zinc-700 min-h-[44px]"
                         onClick={() => handleReactivate(exercise)}
                         disabled={loadingId === exercise.id}
                       >

@@ -139,6 +139,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="min-h-[44px]"
                     onClick={() => setEditTarget(customer)}
                   >
                     <Pencil className="size-3.5 mr-1" />
@@ -148,7 +149,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-zinc-500"
+                      className="text-zinc-500 min-h-[44px]"
                       onClick={() => setDeactivateTarget(customer)}
                     >
                       退会処理
@@ -159,6 +160,7 @@ export function CustomerDetail({ customer, sessions, isOwner }: Props) {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="min-h-[44px]"
                   onClick={handleReactivate}
                   disabled={isReactivating}
                 >

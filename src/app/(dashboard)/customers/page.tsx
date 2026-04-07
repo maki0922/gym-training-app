@@ -11,6 +11,7 @@ export type Customer = {
   notes: string | null
   isActive: boolean
   createdAt: string
+  lastSessionDate: string | null
 }
 
 export default async function CustomersPage() {
@@ -39,6 +40,26 @@ export default async function CustomersPage() {
     ? await query
     : await query.eq('is_active', true)
 
+  // 各顧客の直近セッション日を取得
+  const customerIds = (customers ?? []).map((c) => c.id)
+  const { data: latestSessions } = customerIds.length > 0
+    ? await supabase
+        .from('training_sessions')
+        .select('customer_id, session_date')
+        .in('customer_id', customerIds)
+        .eq('is_deleted', false)
+        .eq('status', 'completed')
+        .order('session_date', { ascending: false })
+    : { data: [] }
+
+  // 各顧客の最新日付をマップ化（最初に出現したものが最新）
+  const lastSessionMap = new Map<string, string>()
+  for (const s of latestSessions ?? []) {
+    if (!lastSessionMap.has(s.customer_id)) {
+      lastSessionMap.set(s.customer_id, s.session_date)
+    }
+  }
+
   const items: Customer[] = (customers ?? []).map((c) => ({
     id: c.id,
     name: c.name,
@@ -48,6 +69,7 @@ export default async function CustomersPage() {
     notes: c.notes,
     isActive: c.is_active,
     createdAt: c.created_at,
+    lastSessionDate: lastSessionMap.get(c.id) ?? null,
   }))
 
   return <CustomerList customers={items} isOwner={isOwner} />

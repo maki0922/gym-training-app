@@ -37,7 +37,7 @@ export default async function DashboardLayout({
         </header>
 
         {/* メインコンテンツ */}
-        <main className="flex-1 px-4 py-6 lg:px-8 pb-24 lg:pb-6">
+        <main className="flex-1 px-4 py-6 lg:px-8 pb-24 lg:pb-6 mx-auto w-full max-w-4xl">
           {children}
         </main>
       </div>

@@ -19,6 +19,11 @@ type Props = {
   isOwner: boolean
 }
 
+function formatDateShort(dateStr: string): string {
+  const d = new Date(dateStr + 'T00:00:00')
+  return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
+}
+
 const GENDER_LABEL: Record<string, string> = {
   male: '男性',
   female: '女性',
@@ -106,6 +111,7 @@ export function CustomerList({ customers, isOwner }: Props) {
                   <th className="px-4 py-3 text-left font-medium text-zinc-600">氏名</th>
                   <th className="px-4 py-3 text-left font-medium text-zinc-600">フリガナ</th>
                   <th className="px-4 py-3 text-left font-medium text-zinc-600">性別</th>
+                  <th className="px-4 py-3 text-left font-medium text-zinc-600">直近トレーニング</th>
                   <th className="px-4 py-3 text-right font-medium text-zinc-600">操作</th>
                 </tr>
               </thead>
@@ -127,6 +133,9 @@ export function CustomerList({ customers, isOwner }: Props) {
                     <td className="px-4 py-3 text-zinc-600">{customer.nameKana}</td>
                     <td className="px-4 py-3 text-zinc-600">
                       {customer.gender ? GENDER_LABEL[customer.gender] : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-600">
+                      {customer.lastSessionDate ? formatDateShort(customer.lastSessionDate) : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <div
@@ -190,9 +199,12 @@ export function CustomerList({ customers, isOwner }: Props) {
                     )}
                   </div>
                   <p className="text-sm text-zinc-500">{customer.nameKana}</p>
-                  {customer.gender && (
-                    <p className="text-sm text-zinc-400">{GENDER_LABEL[customer.gender]}</p>
-                  )}
+                  <div className="flex items-center gap-3 text-sm text-zinc-400">
+                    {customer.gender && <span>{GENDER_LABEL[customer.gender]}</span>}
+                    {customer.lastSessionDate && (
+                      <span>最終: {formatDateShort(customer.lastSessionDate)}</span>
+                    )}
+                  </div>
                 </div>
                 <div
                   className="flex items-center gap-1 shrink-0 ml-2"

@@ -95,6 +95,7 @@ export default async function CustomerDetailPage({ params }: Props) {
           notes: customer.notes,
           isActive: customer.is_active,
           createdAt: customer.created_at,
+          lastSessionDate: sessionList.find((s) => s.status === 'completed')?.sessionDate ?? null,
         }}
         sessions={sessionList}
         isOwner={isOwner}
