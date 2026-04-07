@@ -2,7 +2,9 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/types/database.types'
 
 // ---------- helpers ----------
 
@@ -471,9 +473,16 @@ export async function deleteSession(
   sessionId: string,
   customerId: string
 ): Promise<SessionActionState> {
-  const { supabase } = await requireOwner()
+  // オーナー権限チェック
+  await requireOwner()
 
-  const { error } = await supabase
+  // cookieを使わないservice_roleクライアントでRLSをバイパス
+  const adminClient = createSupabaseClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { error } = await adminClient
     .from('training_sessions')
     .update({ is_deleted: true })
     .eq('id', sessionId)

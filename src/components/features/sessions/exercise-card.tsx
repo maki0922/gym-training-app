@@ -177,52 +177,47 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
 
         {/* セット行 */}
         {record.sets.map((set) => (
-          <div key={set.id} className="grid grid-cols-[2rem_1fr_1fr_2.5rem] gap-2 items-center">
-            <span className="text-sm text-zinc-400 text-center font-medium">{set.setNumber}</span>
-            <Input
-              type="number"
-              inputMode="decimal"
-              step="0.1"
-              min="0"
-              max="999.9"
-              placeholder="—"
-              className="h-11 text-center"
-              value={set.weight ?? ''}
-              onChange={(e) => handleSetLocalChange(set.id, 'weight', e.target.value)}
-              onBlur={() => handleSetBlur(set)}
-            />
-            <Input
-              type="number"
-              inputMode="numeric"
-              step="1"
-              min="0"
-              max="999"
-              placeholder="—"
-              className="h-11 text-center"
-              value={set.reps ?? ''}
-              onChange={(e) => handleSetLocalChange(set.id, 'reps', e.target.value)}
-              onBlur={() => handleSetBlur(set)}
-            />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="text-zinc-300 hover:text-red-500"
-              onClick={() => setDeleteSetTarget(set)}
-            >
-              <Trash2 className="size-3.5" />
-            </Button>
-          </div>
-        ))}
-
-        {/* セットメモ（最後のセットのみ表示するのではなく、各セットにメモフィールドを設けるが、
-            仕様ではセットごとのメモはgridに入れるとUIが混み合うので、
-            セット行クリック等で別途表示する手もあるが、シンプルにset行にnoteがある場合は表示する） */}
-        {record.sets.map((set) => (
-          set.notes !== null && set.notes !== '' ? (
-            <div key={`note-${set.id}`} className="pl-8 pr-10">
+          <div key={set.id} className="space-y-1">
+            <div className="grid grid-cols-[2rem_1fr_1fr_2.5rem] gap-2 items-center">
+              <span className="text-sm text-zinc-400 text-center font-medium">{set.setNumber}</span>
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="0"
+                max="999.9"
+                placeholder="—"
+                className="h-11 text-center"
+                value={set.weight ?? ''}
+                onChange={(e) => handleSetLocalChange(set.id, 'weight', e.target.value)}
+                onBlur={() => handleSetBlur(set)}
+              />
+              <Input
+                type="number"
+                inputMode="numeric"
+                step="1"
+                min="0"
+                max="999"
+                placeholder="—"
+                className="h-11 text-center"
+                value={set.reps ?? ''}
+                onChange={(e) => handleSetLocalChange(set.id, 'reps', e.target.value)}
+                onBlur={() => handleSetBlur(set)}
+              />
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-zinc-300 hover:text-red-500"
+                onClick={() => setDeleteSetTarget(set)}
+              >
+                <Trash2 className="size-3.5" />
+              </Button>
+            </div>
+            {/* セットメモ */}
+            <div className="pl-8 pr-10">
               <Input
                 type="text"
-                placeholder="メモ"
+                placeholder="メモ（例: 補助あり）"
                 className="h-8 text-xs text-zinc-500"
                 maxLength={100}
                 value={set.notes ?? ''}
@@ -230,7 +225,7 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
                 onBlur={() => handleSetBlur(set)}
               />
             </div>
-          ) : null
+          </div>
         ))}
 
         {/* セット追加ボタン */}
@@ -244,29 +239,6 @@ export function ExerciseCard({ sessionId, customerId, record, previousRecord, on
           <Plus className="size-3.5 mr-1" />
           {isPendingAdd ? '追加中...' : 'セットを追加'}
         </Button>
-
-        {/* セットメモ入力トグル - 最後に追加されたセットにメモを追記できるようにする */}
-        {record.sets.length > 0 && record.sets.some((s) => s.notes === null || s.notes === '') && (
-          <button
-            className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
-            onClick={() => {
-              // 最後のセットにメモフィールドを表示
-              const lastSet = record.sets[record.sets.length - 1]
-              if (lastSet.notes === null || lastSet.notes === '') {
-                handleSetLocalChange(lastSet.id, 'notes', '')
-                // 空文字にすることでnotes入力欄が表示される
-                onLocalUpdate(record.id, (r) => ({
-                  ...r,
-                  sets: r.sets.map((s) =>
-                    s.id === lastSet.id ? { ...s, notes: '' } : s
-                  ),
-                }))
-              }
-            }}
-          >
-            セットメモを追加
-          </button>
-        )}
 
         {/* 種目メモ */}
         <div className="space-y-1">
