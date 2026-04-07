@@ -3,7 +3,16 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/types/database.types'
+
+function createAdminClient() {
+  return createSupabaseClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 // --- Zod schemas ---
 
@@ -139,8 +148,9 @@ export async function reactivateTrainer(
     return { error: '再有効化に失敗しました。しばらく時間をおいて再試行してください' }
   }
 
-  // Update profile
-  const { error: profileError } = await serviceClient
+  // Update profile (use admin client to bypass RLS)
+  const adminClient = createAdminClient()
+  const { error: profileError } = await adminClient
     .from('profiles')
     .update({ is_active: true, display_name: displayName, role })
     .eq('id', profileId)
@@ -170,10 +180,10 @@ export async function editTrainer(
 
   const { displayName, role } = parsed.data
 
-  const serviceClient = await createServiceRoleClient()
+  const adminClient = createAdminClient()
 
   // Check if target is primary owner - cannot change role
-  const { data: targetProfile } = await serviceClient
+  const { data: targetProfile } = await adminClient
     .from('profiles')
     .select('is_primary, role')
     .eq('id', targetId)
@@ -187,7 +197,7 @@ export async function editTrainer(
     return { error: 'プライマリオーナーのロールは変更できません' }
   }
 
-  const { error } = await serviceClient
+  const { error } = await adminClient
     .from('profiles')
     .update({ display_name: displayName, role })
     .eq('id', targetId)
@@ -230,8 +240,9 @@ export async function deleteTrainer(targetId: string): Promise<TrainerActionStat
     return { error: '自分自身は削除できません' }
   }
 
-  // Logical delete: set is_active = false
-  const { error: profileError } = await serviceClient
+  // Logical delete: set is_active = false (use admin client to bypass RLS)
+  const adminClient = createAdminClient()
+  const { error: profileError } = await adminClient
     .from('profiles')
     .update({ is_active: false })
     .eq('id', targetId)
