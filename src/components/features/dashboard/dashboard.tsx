@@ -19,7 +19,7 @@ function formatDate(dateStr: string): string {
 
 function formatDateShort(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00')
-  return `${d.getMonth() + 1}/${d.getDate()}`
+  return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
 }
 
 export function Dashboard({ todaySessions, inProgressSessions, recentSessions }: Props) {
@@ -61,67 +61,54 @@ export function Dashboard({ todaySessions, inProgressSessions, recentSessions }:
       )}
 
       {/* 本日のセッション */}
-      <section className="space-y-3">
+      <section className="space-y-2">
         <h2 className="text-base font-bold text-zinc-900">本日のセッション</h2>
         {todaySessions.length === 0 ? (
           <p className="text-sm text-zinc-500 py-6 text-center">本日のセッションはまだありません</p>
         ) : (
-          <div className="space-y-2">
+          <Card className="divide-y divide-zinc-100 overflow-hidden">
             {todaySessions.map((s) => (
-              <Card
+              <button
                 key={s.id}
-                className="p-4 cursor-pointer hover:bg-zinc-50 transition-colors"
+                className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-zinc-50 transition-colors"
                 onClick={() => handleSessionClick(s)}
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-zinc-900">{s.customerName}</span>
-                      {s.status === 'in_progress' ? (
-                        <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 text-xs">
-                          <Clock className="size-3 mr-0.5" />
-                          入力中
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-xs">
-                          <CheckCircle className="size-3 mr-0.5" />
-                          完了
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-zinc-500">担当: {s.trainerName}</p>
-                    <p className="text-sm text-zinc-400">種目数: {s.exerciseCount}</p>
-                  </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm font-medium text-zinc-900 truncate">{s.customerName}</span>
+                  {s.status === 'in_progress' ? (
+                    <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 text-xs shrink-0">入力中</Badge>
+                  ) : (
+                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-xs shrink-0">完了</Badge>
+                  )}
                 </div>
-              </Card>
+                <span className="text-xs text-zinc-400 shrink-0 ml-2">{s.trainerName} / {s.exerciseCount}種目</span>
+              </button>
             ))}
-          </div>
+          </Card>
         )}
       </section>
 
       {/* 直近の記録 */}
-      <section className="space-y-3">
+      <section className="space-y-2">
         <h2 className="text-base font-bold text-zinc-900">直近の記録</h2>
         {recentSessions.length === 0 ? (
           <p className="text-sm text-zinc-500 py-6 text-center">直近の記録はありません</p>
         ) : (
-          <div className="space-y-2">
+          <Card className="divide-y divide-zinc-100 overflow-hidden">
             {recentSessions.map((s) => (
-              <Card
+              <button
                 key={s.id}
-                className="p-4 cursor-pointer hover:bg-zinc-50 transition-colors"
+                className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-zinc-50 transition-colors"
                 onClick={() => router.push(`/sessions/${s.id}`)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <span className="font-medium text-zinc-900">{s.customerName}</span>
-                    <p className="text-sm text-zinc-500">担当: {s.trainerName} / 種目数: {s.exerciseCount}</p>
-                  </div>
-                  <span className="text-sm text-zinc-400 shrink-0 ml-2">{formatDateShort(s.sessionDate)}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm font-medium text-zinc-900 truncate">{s.customerName}</span>
+                  <span className="text-xs text-zinc-400 shrink-0">{s.exerciseCount}種目</span>
                 </div>
-              </Card>
+                <span className="text-xs text-zinc-400 shrink-0 ml-2">{formatDateShort(s.sessionDate)}</span>
+              </button>
             ))}
-          </div>
+          </Card>
         )}
       </section>
     </div>
