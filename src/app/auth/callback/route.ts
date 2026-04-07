@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (error) {
+      console.error('auth callback exchangeCode error:', error.message)
       if (type === 'invite') {
         return NextResponse.redirect(`${origin}/login?error=invite_expired`)
       }
@@ -24,6 +25,7 @@ export async function GET(request: Request) {
       type: type as 'recovery' | 'email' | 'invite',
     })
     if (error) {
+      console.error('auth callback verifyOtp error:', error.message)
       if (type === 'invite') {
         return NextResponse.redirect(`${origin}/login?error=invite_expired`)
       }
@@ -31,7 +33,10 @@ export async function GET(request: Request) {
     }
   }
 
+  // 招待・パスワードリセット時はセッションを確認
   if (type === 'recovery' || type === 'invite') {
+    const { data: { session } } = await supabase.auth.getSession()
+    console.log('auth callback session check:', session ? 'session exists' : 'no session')
     return NextResponse.redirect(`${origin}/reset-password/update`)
   }
 
