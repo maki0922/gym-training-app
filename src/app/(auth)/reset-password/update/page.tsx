@@ -36,7 +36,8 @@ export default function UpdatePasswordPage() {
     setIsPending(false)
 
     if (error) {
-      setError('パスワードの更新に失敗しました。再度お試しください')
+      console.error('updateUser error:', error.message, error.status, error.code)
+      setError(`パスワードの更新に失敗しました: ${error.message}`)
       return
     }
 
