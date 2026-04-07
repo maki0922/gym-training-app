@@ -1,11 +1,19 @@
 'use client'
 
-import { Suspense, useActionState } from 'react'
+import { Suspense, useActionState, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { QRCodeSVG } from 'qrcode.react'
+import { QrCode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { login } from '@/lib/actions/auth'
 import { APP_NAME } from '@/lib/constants'
 
@@ -32,6 +40,8 @@ function UrlErrorAlert() {
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, initialState)
+  const [qrOpen, setQrOpen] = useState(false)
+  const loginUrl = typeof window !== 'undefined' ? `${window.location.origin}/login` : ''
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -126,7 +136,36 @@ export default function LoginPage() {
               {isPending ? 'ログイン中...' : 'ログイン'}
             </Button>
           </form>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setQrOpen(true)}
+              className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+            >
+              <QrCode className="size-3.5" />
+              QRコードを表示
+            </button>
+          </div>
         </div>
+
+        <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+          <DialogContent className="max-w-xs">
+            <DialogHeader>
+              <DialogTitle className="text-center">ログインページ</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center gap-4 py-4">
+              {loginUrl && (
+                <QRCodeSVG
+                  value={loginUrl}
+                  size={200}
+                  level="M"
+                />
+              )}
+              <p className="text-xs text-zinc-500 text-center break-all">{loginUrl}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
