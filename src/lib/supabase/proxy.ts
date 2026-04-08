@@ -43,18 +43,23 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  const isAuthPage =
+  // 認証不要ページ（未認証ユーザーがアクセスするページ）
+  const isGuestPage =
     pathname.startsWith("/login") ||
-    pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/auth/");
+    pathname === "/reset-password";
 
-  if (!user && !isAuthPage) {
+  // 認証フロー中のページ（認証済み・未認証どちらでもアクセス可能）
+  const isAuthFlowPage =
+    pathname.startsWith("/auth/") ||
+    pathname.startsWith("/reset-password/update");
+
+  if (!user && !isGuestPage && !isAuthFlowPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthPage) {
+  if (user && isGuestPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);

@@ -53,9 +53,12 @@ function CallbackHandler() {
       }
 
       // 招待・パスワードリセットの場合はパスワード設定画面へ
+      console.log('auth callback redirect check:', { type, tokenHash: tokenHash ? 'present' : 'null', code: code ? 'present' : 'null' })
       if (type === 'recovery' || type === 'invite') {
+        console.log('auth callback: redirecting to /reset-password/update')
         router.replace('/reset-password/update')
       } else {
+        console.log('auth callback: redirecting to /')
         router.replace('/')
       }
     }
