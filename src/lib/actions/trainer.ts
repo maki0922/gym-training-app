@@ -249,7 +249,8 @@ export async function deleteTrainer(targetId: string): Promise<TrainerActionStat
     .eq('id', targetId)
 
   if (profileError) {
-    return { error: '削除に失敗しました。しばらく時間をおいて再試行してください' }
+    console.error('[deleteTrainer] profile update error:', profileError)
+    return { error: `削除に失敗しました（profile: ${profileError.message}）` }
   }
 
   // Ban auth user (disable login)
@@ -258,9 +259,11 @@ export async function deleteTrainer(targetId: string): Promise<TrainerActionStat
   })
 
   if (authError) {
-    return { error: '削除に失敗しました。しばらく時間をおいて再試行してください' }
+    console.error('[deleteTrainer] auth ban error:', authError)
+    return { error: `削除に失敗しました（auth: ${authError.message}）` }
   }
 
+  console.log('[deleteTrainer] success for:', targetId)
   revalidatePath('/admin/trainers')
   return { success: true }
 }
