@@ -34,8 +34,14 @@ yarn-error.log*
 .env*
 !.env.example
 
+# claude code
+.claude/
+
 # vercel
 .vercel
+
+# supabase
+supabase/.temp/
 
 # typescript
 *.tsbuildinfo
