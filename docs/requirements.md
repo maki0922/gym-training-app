@@ -158,6 +158,14 @@ training_sets (セット記録)
 
 ※ 新規アカウント作成はオーナーからの招待のみ（セルフ登録不可）
 
+**ミドルウェアによるアクセス制御（`proxy.ts`）:**
+
+| ページ分類 | 対象パス | 未認証 | 認証済み |
+|-----------|---------|--------|---------|
+| ゲストページ | `/login`, `/reset-password` | アクセス可 | `/` にリダイレクト |
+| 認証フローページ | `/auth/callback`, `/reset-password/update` | アクセス可 | アクセス可 |
+| ダッシュボード等 | 上記以外 | `/login` にリダイレクト | アクセス可 |
+
 ### 4.2 トレーナー向け画面（モバイルファースト）
 
 | 画面 | 機能 |
@@ -420,10 +428,10 @@ src/
 │   ├── supabase/
 │   │   ├── client.ts           ← ブラウザ用クライアント
 │   │   ├── server.ts           ← サーバー用クライアント
-│   │   └── middleware.ts       ← 認証ミドルウェア
+│   │   └── proxy.ts            ← 認証ミドルウェア（セッション管理・アクセス制御）
 │   ├── types/                  ← TypeScript型定義
 │   └── utils/                  ← ユーティリティ関数
-├── middleware.ts               ← Next.js認証ミドルウェア
+├── proxy.ts                    ← Next.js認証ミドルウェア
 vercel.json                     ← Cron Job設定（毎日0:00 JST）
 docs/
 ├── requirements.md             ← 要件定義書（本ファイル）
